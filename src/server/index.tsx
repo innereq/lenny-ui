@@ -95,8 +95,8 @@ server.get('/*', async (req, res) => {
 
            <!-- Styles -->
            <link rel="stylesheet" type="text/css" href="/static/styles/styles.css" />
-           <link rel="stylesheet" type="text/css" href="/static/assets/css/themes/litely.min.css" id="default-light" media="(prefers-color-scheme: light)" />
-           <link rel="stylesheet" type="text/css" href="/static/assets/css/themes/darkly.min.css" id="default-dark" media="(prefers-color-scheme: no-preference), (prefers-color-scheme: dark)" />
+           <link rel="stylesheet" type="text/css" href="/static/assets/css/themes/pleroma.min.css" id="default-light" media="(prefers-color-scheme: light)" />
+           <link rel="stylesheet" type="text/css" href="/static/assets/css/themes/pleroma-dark.min.css" id="default-dark" media="(prefers-color-scheme: no-preference), (prefers-color-scheme: dark)" />
            </head>
 
            <body ${helmet.bodyAttributes.toString()}>

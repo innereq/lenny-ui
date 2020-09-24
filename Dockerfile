@@ -10,11 +10,8 @@ COPY package.json yarn.lock ./
 RUN yarn install --pure-lockfile
 
 # Build 
-COPY generate_translations.js \
-  tsconfig.json \
-  webpack.config.js \
-  .babelrc \
-  .
+COPY generate_translations.js tsconfig.json webpack.config.js .babelrc ./
+  
 COPY lemmy-translations lemmy-translations
 COPY src src
 

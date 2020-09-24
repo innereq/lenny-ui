@@ -21,7 +21,7 @@ export class Footer extends Component<FooterProps, FooterState> {
         <div className="navbar-collapse">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <span class="navbar-text">{this.props.site.version}</span>
+              <span class="navbar-text">( ͡° ͜ʖ ͡°) {this.props.site.version}</span>
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/modlog">
@@ -37,11 +37,6 @@ export class Footer extends Component<FooterProps, FooterState> {
               <a className="nav-link" href={'/docs/index.html'}>
                 {i18n.t('docs')}
               </a>
-            </li>
-            <li class="nav-item">
-              <Link className="nav-link" to="/sponsors">
-                {i18n.t('donate')}
-              </Link>
             </li>
             <li class="nav-item">
               <a className="nav-link" href={repoUrl}>

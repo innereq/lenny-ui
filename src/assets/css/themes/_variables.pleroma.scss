@@ -1,0 +1,40 @@
+// Colors
+$blue: #0095ff;
+$green: #0fa00f;
+$orange: #f86f0f;
+$red: #d31014;
+
+// Main
+$body-bg: #f2f4f6;
+$body-color: #304055;
+$border-color: #d6dfed;
+$danger: $red;
+$info: $blue;
+$link-color: $primary;
+$primary: $orange;
+$secondary: #6f83a4;
+$success: $green;
+$warning: $orange;
+
+// Navbar
+$navbar-light-hover-color: $gray-900;
+$navbar-light-color: $gray-600;
+$navbar-dark-toggler-border-color: $border-color;
+$navbar-light-active-color: $gray-900;
+
+// Cards
+$card-color: $gray-700;
+$card-cap-color: $gray-700;
+$card-bg: $gray-100;
+
+// Radius
+$border-radius: 0;
+$border-radius-lg: 0;
+$border-radius-sm: 0;
+$rounded-pill: 0.25rem;
+
+// Misc
+$mark-bg: rgb(255, 252, 239);
+$pre-color: inherit;
+$form-feedback-valid-color: theme-color("info");
+$input-btn-focus-color: rgba($component-active-bg, .75);
