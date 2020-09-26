@@ -676,6 +676,7 @@ export class Main extends Component<any, MainState> {
       toast(i18n.t(msg.error), 'danger');
       return;
     } else if (msg.reconnect) {
+      WebSocketService.Instance.communityJoin({ community_id: 0 });
       this.fetchData();
     } else if (res.op == UserOperation.GetFollowedCommunities) {
       let data = res.data as GetFollowedCommunitiesResponse;
@@ -726,7 +727,14 @@ export class Main extends Component<any, MainState> {
         }
       }
       this.setState(this.state);
-    } else if (res.op == UserOperation.EditPost) {
+    } else if (
+      res.op == UserOperation.EditPost ||
+      res.op == UserOperation.DeletePost ||
+      res.op == UserOperation.RemovePost ||
+      res.op == UserOperation.LockPost ||
+      res.op == UserOperation.StickyPost ||
+      res.op == UserOperation.SavePost
+    ) {
       let data = res.data as PostResponse;
       editPostFindRes(data, this.state.posts);
       this.setState(this.state);
