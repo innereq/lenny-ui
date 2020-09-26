@@ -72,7 +72,7 @@ export const favIconPngUrl = '/static/assets/apple-touch-icon.png';
 // TODO
 // export const defaultFavIcon = `${window.location.protocol}//${window.location.host}${favIconPngUrl}`;
 export const defaultFavIcon = 'test';
-export const repoUrl = 'https://github.com/LemmyNet';
+export const repoUrl = 'https://github.com/innereq/lenny';
 export const helpGuideUrl = '/docs/about_guide.html';
 export const markdownHelpUrl = `${helpGuideUrl}#markdown-guide`;
 export const sortingHelpUrl = `${helpGuideUrl}#sorting`;
