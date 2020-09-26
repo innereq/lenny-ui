@@ -1,0 +1,30 @@
+name: "Continuous Integration"
+
+on: 
+  push:
+    branches:
+      - downstream
+  pull_request:
+    branches:
+      - downstream
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "Install Node toolchain"
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      
+      - name: "Build frontend code"
+        run: |
+          yarn
+          yarn build:dev
+
+      - name: "Lint frontend code"
+        run: |
+          yarn lint
