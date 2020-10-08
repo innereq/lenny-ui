@@ -819,7 +819,7 @@ export function getListingTypeFromProps(props: any): ListingType {
     ? routeListingTypeToEnum(props.match.params.listing_type)
     : UserService.Instance.user
     ? Object.values(ListingType)[UserService.Instance.user.default_listing_type]
-    : ListingType.All;
+    : ListingType.Local;
 }
 
 // TODO might need to add a user setting for this too
@@ -1171,9 +1171,9 @@ moment.updateLocale('en', {
     dd: '%dd',
     w: '1w',
     ww: '%dw',
-    M: '1m',
-    MM: '%dm',
-    y: '1y',
-    yy: '%dy',
+    M: '1M',
+    MM: '%dM',
+    y: '1Y',
+    yy: '%dY',
   },
 });
