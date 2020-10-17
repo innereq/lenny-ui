@@ -24,6 +24,7 @@ import { PostForm } from './post-form';
 import { IFramelyCard } from './iframely-card';
 import { UserListing } from './user-listing';
 import { CommunityLink } from './community-link';
+import { PictrsImage } from './pictrs-image';
 import {
   md,
   mdToHtml,
@@ -32,7 +33,6 @@ import {
   isImage,
   isVideo,
   getUnixTime,
-  pictrsImage,
   setupTippy,
   hostname,
   previewLines,
@@ -164,27 +164,26 @@ export class PostListing extends Component<PostListingProps, PostListingState> {
   imgThumb(src: string) {
     let post = this.props.post;
     return (
-      <img
-        className={`img-fluid thumbnail rounded ${
-          post.nsfw || post.community_nsfw ? 'img-blur' : ''
-        }`}
+      <PictrsImage
         src={src}
+        thumbnail
+        nsfw={post.nsfw || post.community_nsfw}
       />
     );
   }
 
-  getImage(thumbnail: boolean = false) {
+  getImageSrc(): string {
     let post = this.props.post;
     if (isImage(post.url)) {
       if (post.url.includes('pictrs')) {
-        return pictrsImage(post.url, thumbnail);
+        return post.url;
       } else if (post.thumbnail_url) {
-        return pictrsImage(post.thumbnail_url, thumbnail);
+        return post.thumbnail_url;
       } else {
         return post.url;
       }
     } else if (post.thumbnail_url) {
-      return pictrsImage(post.thumbnail_url, thumbnail);
+      return post.thumbnail_url;
     } else {
       return null;
     }
@@ -200,7 +199,7 @@ export class PostListing extends Component<PostListingProps, PostListingState> {
           data-tippy-content={i18n.t('expand_here')}
           onClick={linkEvent(this, this.handleImageExpandClick)}
         >
-          {this.imgThumb(this.getImage(true))}
+          {this.imgThumb(this.getImageSrc())}
           <svg class="icon mini-overlay">
             <use xlinkHref="#icon-image"></use>
           </svg>
@@ -215,7 +214,7 @@ export class PostListing extends Component<PostListingProps, PostListingState> {
           rel="noopener"
           title={post.url}
         >
-          {this.imgThumb(this.getImage(true))}
+          {this.imgThumb(this.getImageSrc())}
           <svg class="icon mini-overlay">
             <use xlinkHref="#icon-external-link"></use>
           </svg>
@@ -442,7 +441,7 @@ export class PostListing extends Component<PostListingProps, PostListingState> {
                     class="pointer"
                     onClick={linkEvent(this, this.handleImageExpandClick)}
                   >
-                    <img class="img-fluid img-expanded" src={this.getImage()} />
+                    <PictrsImage src={this.getImageSrc()} />
                   </span>
                 </div>
               </span>
@@ -749,53 +748,53 @@ export class PostListing extends Component<PostListingProps, PostListingState> {
               {/* Mods can ban from community, and appoint as mods to community */}
               {(this.canMod || this.canAdmin) &&
                 (!post.removed ? (
-                  <span
-                    class="pointer"
+                  <button
+                    class="btn btn-link btn-animate text-muted py-0"
                     onClick={linkEvent(this, this.handleModRemoveShow)}
                   >
                     {i18n.t('remove')}
-                  </span>
+                  </button>
                 ) : (
-                  <span
-                    class="pointer"
+                  <button
+                    class="btn btn-link btn-animate text-muted py-0"
                     onClick={linkEvent(this, this.handleModRemoveSubmit)}
                   >
                     {i18n.t('restore')}
-                  </span>
+                  </button>
                 ))}
               {this.canMod && (
                 <>
                   {!this.isMod &&
                     (!post.banned_from_community ? (
-                      <span
-                        class="pointer"
+                      <button
+                        class="btn btn-link btn-animate text-muted py-0"
                         onClick={linkEvent(
                           this,
                           this.handleModBanFromCommunityShow
                         )}
                       >
                         {i18n.t('ban')}
-                      </span>
+                      </button>
                     ) : (
-                      <span
-                        class="pointer"
+                      <button
+                        class="btn btn-link btn-animate text-muted py-0"
                         onClick={linkEvent(
                           this,
                           this.handleModBanFromCommunitySubmit
                         )}
                       >
                         {i18n.t('unban')}
-                      </span>
+                      </button>
                     ))}
                   {!post.banned_from_community && post.creator_local && (
-                    <span
-                      class="pointer"
+                    <button
+                      class="btn btn-link btn-animate text-muted py-0"
                       onClick={linkEvent(this, this.handleAddModToCommunity)}
                     >
                       {this.isMod
                         ? i18n.t('remove_as_mod')
                         : i18n.t('appoint_as_mod')}
-                    </span>
+                    </button>
                   )}
                 </>
               )}
@@ -804,35 +803,35 @@ export class PostListing extends Component<PostListingProps, PostListingState> {
                 this.isMod &&
                 post.creator_local &&
                 (!this.state.showConfirmTransferCommunity ? (
-                  <span
-                    class="pointer"
+                  <button
+                    class="btn btn-link btn-animate text-muted py-0"
                     onClick={linkEvent(
                       this,
                       this.handleShowConfirmTransferCommunity
                     )}
                   >
                     {i18n.t('transfer_community')}
-                  </span>
+                  </button>
                 ) : (
                   <>
-                    <span class="d-inline-block mr-1">
+                    <button class="d-inline-block mr-1 btn btn-link btn-animate text-muted py-0">
                       {i18n.t('are_you_sure')}
-                    </span>
-                    <span
-                      class="pointer d-inline-block mr-1"
+                    </button>
+                    <button
+                      class="btn btn-link btn-animate text-muted py-0 d-inline-block mr-1"
                       onClick={linkEvent(this, this.handleTransferCommunity)}
                     >
                       {i18n.t('yes')}
-                    </span>
-                    <span
-                      class="pointer d-inline-block"
+                    </button>
+                    <button
+                      class="btn btn-link btn-animate text-muted py-0 d-inline-block"
                       onClick={linkEvent(
                         this,
                         this.handleCancelShowConfirmTransferCommunity
                       )}
                     >
                       {i18n.t('no')}
-                    </span>
+                    </button>
                   </>
                 ))}
               {/* Admins can ban from all, and appoint other admins */}
@@ -840,29 +839,29 @@ export class PostListing extends Component<PostListingProps, PostListingState> {
                 <>
                   {!this.isAdmin &&
                     (!post.banned ? (
-                      <span
-                        class="pointer"
+                      <button
+                        class="btn btn-link btn-animate text-muted py-0"
                         onClick={linkEvent(this, this.handleModBanShow)}
                       >
                         {i18n.t('ban_from_site')}
-                      </span>
+                      </button>
                     ) : (
-                      <span
-                        class="pointer"
+                      <button
+                        class="btn btn-link btn-animate text-muted py-0"
                         onClick={linkEvent(this, this.handleModBanSubmit)}
                       >
                         {i18n.t('unban_from_site')}
-                      </span>
+                      </button>
                     ))}
                   {!post.banned && post.creator_local && (
-                    <span
-                      class="pointer"
+                    <button
+                      class="btn btn-link btn-animate text-muted py-0"
                       onClick={linkEvent(this, this.handleAddAdmin)}
                     >
                       {this.isAdmin
                         ? i18n.t('remove_as_admin')
                         : i18n.t('appoint_as_admin')}
-                    </span>
+                    </button>
                   )}
                 </>
               )}
@@ -870,35 +869,35 @@ export class PostListing extends Component<PostListingProps, PostListingState> {
               {this.amSiteCreator &&
                 this.isAdmin &&
                 (!this.state.showConfirmTransferSite ? (
-                  <span
-                    class="pointer"
+                  <button
+                    class="btn btn-link btn-animate text-muted py-0"
                     onClick={linkEvent(
                       this,
                       this.handleShowConfirmTransferSite
                     )}
                   >
                     {i18n.t('transfer_site')}
-                  </span>
+                  </button>
                 ) : (
                   <>
-                    <span class="d-inline-block mr-1">
+                    <button class="btn btn-link btn-animate text-muted py-0 d-inline-block mr-1">
                       {i18n.t('are_you_sure')}
-                    </span>
-                    <span
-                      class="pointer d-inline-block mr-1"
+                    </button>
+                    <button
+                      class="btn btn-link btn-animate text-muted py-0 d-inline-block mr-1"
                       onClick={linkEvent(this, this.handleTransferSite)}
                     >
                       {i18n.t('yes')}
-                    </span>
-                    <span
-                      class="pointer d-inline-block"
+                    </button>
+                    <button
+                      class="btn btn-link btn-animate text-muted py-0 d-inline-block"
                       onClick={linkEvent(
                         this,
                         this.handleCancelShowConfirmTransferSite
                       )}
                     >
                       {i18n.t('no')}
-                    </span>
+                    </button>
                   </>
                 ))}
             </>
