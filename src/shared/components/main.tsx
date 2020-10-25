@@ -37,7 +37,6 @@ import { CommunityLink } from './community-link';
 import { BannerIconHeader } from './banner-icon-header';
 import {
   wsJsonToRes,
-  repoUrl,
   mdToHtml,
   fetchLimit,
   toast,
