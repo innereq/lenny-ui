@@ -13,6 +13,7 @@ import { lemmyHttp, setAuth } from '../shared/utils';
 import { GetSiteForm, GetSiteResponse } from 'lemmy-js-client';
 import process from 'process';
 import { Helmet } from 'inferno-helmet';
+import { initializeSite } from '../shared/initialize';
 
 const server = express();
 const port = 1234;
@@ -59,6 +60,8 @@ server.get('/*', async (req, res) => {
     lang,
   };
 
+  initializeSite(site);
+
   const wrapper = (
     <StaticRouter location={req.url} context={isoData}>
       <App site={isoData.site} />
@@ -75,11 +78,10 @@ server.get('/*', async (req, res) => {
            <!DOCTYPE html>
            <html ${helmet.htmlAttributes.toString()} lang="en">
            <head>
-           <script>window.isoData = ${serialize(isoData)}</script>      
+           <script>window.isoData = ${serialize(isoData)}</script>
 
            ${helmet.title.toString()}
            ${helmet.meta.toString()}
-           ${helmet.link.toString()}
 
            <!-- Required meta tags -->
            <meta name="Description" content="Lemmy">
@@ -95,8 +97,9 @@ server.get('/*', async (req, res) => {
 
            <!-- Styles -->
            <link rel="stylesheet" type="text/css" href="/static/styles/styles.css" />
-           <link rel="stylesheet" type="text/css" href="/static/assets/css/themes/pleroma.min.css" id="default-light" media="(prefers-color-scheme: light)" />
-           <link rel="stylesheet" type="text/css" href="/static/assets/css/themes/pleroma-dark.min.css" id="default-dark" media="(prefers-color-scheme: no-preference), (prefers-color-scheme: dark)" />
+
+           <!-- Current theme and more -->
+           ${helmet.link.toString()}
            </head>
 
            <body ${helmet.bodyAttributes.toString()}>
@@ -105,7 +108,7 @@ server.get('/*', async (req, res) => {
                  <b>Javascript is disabled. Actions will not work.</b>
                </div>
              </noscript>
-            
+
              <div id='root'>${root}</div>
              <script defer src='/static/js/client.js'></script>
            </body>
