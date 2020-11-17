@@ -17,7 +17,7 @@ import {
   PostResponse,
   BanUserResponse,
 } from 'lemmy-js-client';
-import { UserDetailsView } from '../interfaces';
+import { InitialFetchRequest, UserDetailsView } from '../interfaces';
 import { WebSocketService, UserService } from '../services';
 import {
   wsJsonToRes,
@@ -41,7 +41,6 @@ import {
   saveCommentRes,
   createPostLikeFindRes,
   setAuth,
-  lemmyHttp,
   previewLines,
   editPostFindRes,
 } from '../utils';
@@ -56,6 +55,7 @@ import { UserDetails } from './user-details';
 import { MarkdownTextArea } from './markdown-textarea';
 import { ImageUploadForm } from './image-upload-form';
 import { BannerIconHeader } from './banner-icon-header';
+import { CommunityLink } from './community-link';
 
 interface UserState {
   userRes: UserDetailsResponse;
@@ -187,8 +187,8 @@ export class User extends Component<any, UserState> {
     return page ? Number(page) : 1;
   }
 
-  static fetchInitialData(auth: string, path: string): Promise<any>[] {
-    let pathSplit = path.split('/');
+  static fetchInitialData(req: InitialFetchRequest): Promise<any>[] {
+    let pathSplit = req.path.split('/');
     let promises: Promise<any>[] = [];
 
     // It can be /u/me, or /username/1
@@ -212,8 +212,8 @@ export class User extends Component<any, UserState> {
       limit: fetchLimit,
     };
     this.setIdOrName(form, user_id, username);
-    setAuth(form, auth);
-    promises.push(lemmyHttp.getUserDetails(form));
+    setAuth(form, req.auth);
+    promises.push(req.client.getUserDetails(form));
     return promises;
   }
 
@@ -251,7 +251,7 @@ export class User extends Component<any, UserState> {
   }
 
   get documentTitle(): string {
-    return `@${this.state.userName} - ${this.state.siteRes.site.name}`;
+    return `@${this.state.userRes.user.name} - ${this.state.siteRes.site.name}`;
   }
 
   get bioTag(): string {
@@ -842,9 +842,15 @@ export class User extends Component<any, UserState> {
               <ul class="list-unstyled mb-0">
                 {this.state.userRes.moderates.map(community => (
                   <li>
-                    <Link to={`/c/${community.community_name}`}>
-                      {community.community_name}
-                    </Link>
+                    <CommunityLink
+                      community={{
+                        name: community.community_name,
+                        id: community.community_id,
+                        local: community.community_local,
+                        actor_id: community.community_actor_id,
+                        icon: community.community_icon,
+                      }}
+                    />
                   </li>
                 ))}
               </ul>
@@ -865,9 +871,15 @@ export class User extends Component<any, UserState> {
               <ul class="list-unstyled mb-0">
                 {this.state.userRes.follows.map(community => (
                   <li>
-                    <Link to={`/c/${community.community_name}`}>
-                      {community.community_name}
-                    </Link>
+                    <CommunityLink
+                      community={{
+                        name: community.community_name,
+                        id: community.community_id,
+                        local: community.community_local,
+                        actor_id: community.community_actor_id,
+                        icon: community.community_icon,
+                      }}
+                    />
                   </li>
                 ))}
               </ul>

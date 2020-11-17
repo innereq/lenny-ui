@@ -562,20 +562,22 @@ export class PostListing extends Component<PostListingProps, PostListingState> {
                 </svg>
                 {this.state.upvotes}
               </button>
-              <button
-                className={`ml-2 btn-animate btn py-0 pl-1 ${
-                  this.state.my_vote == -1 ? 'text-danger' : 'text-muted'
-                }`}
-                onClick={linkEvent(this, this.handlePostDisLike)}
-                data-tippy-content={this.pointsTippy}
-              >
-                <svg class="small icon icon-inline mr-2">
-                  <use xlinkHref="#icon-arrow-down1"></use>
-                </svg>
-                {this.state.downvotes !== 0 && (
-                  <span>{this.state.downvotes}</span>
-                )}
-              </button>
+              {this.props.enableDownvotes && (
+                <button
+                  className={`ml-2 btn-animate btn py-0 pl-1 ${
+                    this.state.my_vote == -1 ? 'text-danger' : 'text-muted'
+                  }`}
+                  onClick={linkEvent(this, this.handlePostDisLike)}
+                  data-tippy-content={this.pointsTippy}
+                >
+                  <svg class="small icon icon-inline mr-2">
+                    <use xlinkHref="#icon-arrow-down1"></use>
+                  </svg>
+                  {this.state.downvotes !== 0 && (
+                    <span>{this.state.downvotes}</span>
+                  )}
+                </button>
+              )}
             </div>
             <button
               class="btn btn-link btn-animate text-muted py-0 pl-1 pr-0"
@@ -617,7 +619,13 @@ export class PostListing extends Component<PostListingProps, PostListingState> {
             </li>
             {this.props.post.duplicates.map(post => (
               <li className="list-inline-item mr-2">
-                <Link to={`/post/${post.id}`}>{post.community_name}</Link>
+                <Link to={`/post/${post.id}`}>
+                  {post.community_local
+                    ? post.community_name
+                    : `${post.community_name}@${hostname(
+                        post.community_actor_id
+                      )}`}
+                </Link>
               </li>
             ))}
           </>
