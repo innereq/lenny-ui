@@ -3,14 +3,13 @@ import { HtmlTags } from './html-tags';
 import { Subscription } from 'rxjs';
 import {
   UserOperation,
-  Community,
+  CommunityView,
   ListCommunitiesResponse,
   CommunityResponse,
-  FollowCommunityForm,
-  ListCommunitiesForm,
+  FollowCommunity,
+  ListCommunities,
   SortType,
-  WebSocketJsonResponse,
-  Site,
+  SiteView,
 } from 'lemmy-js-client';
 import { WebSocketService } from '../services';
 import {
@@ -18,9 +17,12 @@ import {
   toast,
   getPageFromProps,
   isBrowser,
-  setAuth,
   setIsoData,
   wsSubscribe,
+  wsUserOp,
+  wsClient,
+  authField,
+  setOptionalAuth,
 } from '../utils';
 import { CommunityLink } from './community-link';
 import { i18n } from '../i18next';
@@ -29,10 +31,11 @@ import { InitialFetchRequest } from 'shared/interfaces';
 const communityLimit = 100;
 
 interface CommunitiesState {
-  communities: Community[];
+  communities: CommunityView[];
   page: number;
   loading: boolean;
-  site: Site;
+  site_view: SiteView;
+  searchText: string;
 }
 
 interface CommunitiesProps {
@@ -46,7 +49,8 @@ export class Communities extends Component<any, CommunitiesState> {
     communities: [],
     loading: true,
     page: getPageFromProps(this.props),
-    site: this.isoData.site.site,
+    site_view: this.isoData.site_res.site_view,
+    searchText: '',
   };
 
   constructor(props: any, context: any) {
@@ -60,7 +64,7 @@ export class Communities extends Component<any, CommunitiesState> {
     if (this.isoData.path == this.context.router.route.match.url) {
       this.state.communities = this.isoData.routeData[0].communities;
       this.state.communities.sort(
-        (a, b) => b.number_of_subscribers - a.number_of_subscribers
+        (a, b) => b.counts.subscribers - a.counts.subscribers
       );
       this.state.loading = false;
     } else {
@@ -88,7 +92,7 @@ export class Communities extends Component<any, CommunitiesState> {
   }
 
   get documentTitle(): string {
-    return `${i18n.t('communities')} - ${this.state.site.name}`;
+    return `${i18n.t('communities')} - ${this.state.site_view.site.name}`;
   }
 
   render() {
@@ -106,7 +110,15 @@ export class Communities extends Component<any, CommunitiesState> {
           </h5>
         ) : (
           <div>
-            <h5>{i18n.t('list_of_communities')}</h5>
+            <div class="row">
+              <div class="col-md-6">
+                <h4>{i18n.t('list_of_communities')}</h4>
+              </div>
+              <div class="col-md-6">
+                <div class="float-md-right">{this.searchForm()}</div>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table id="community_table" class="table table-sm table-hover">
                 <thead class="pointer">
@@ -124,27 +136,25 @@ export class Communities extends Component<any, CommunitiesState> {
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.communities.map(community => (
+                  {this.state.communities.map(cv => (
                     <tr>
                       <td>
-                        <CommunityLink community={community} />
+                        <CommunityLink community={cv.community} />
                       </td>
-                      <td>{community.category_name}</td>
-                      <td class="text-right">
-                        {community.number_of_subscribers}
+                      <td>{cv.category.name}</td>
+                      <td class="text-right">{cv.counts.subscribers}</td>
+                      <td class="text-right d-none d-lg-table-cell">
+                        {cv.counts.posts}
                       </td>
                       <td class="text-right d-none d-lg-table-cell">
-                        {community.number_of_posts}
-                      </td>
-                      <td class="text-right d-none d-lg-table-cell">
-                        {community.number_of_comments}
+                        {cv.counts.comments}
                       </td>
                       <td class="text-right">
-                        {community.subscribed ? (
+                        {cv.subscribed ? (
                           <span
                             class="pointer btn-link"
                             onClick={linkEvent(
-                              community.id,
+                              cv.community.id,
                               this.handleUnsubscribe
                             )}
                           >
@@ -154,7 +164,7 @@ export class Communities extends Component<any, CommunitiesState> {
                           <span
                             class="pointer btn-link"
                             onClick={linkEvent(
-                              community.id,
+                              cv.community.id,
                               this.handleSubscribe
                             )}
                           >
@@ -171,6 +181,28 @@ export class Communities extends Component<any, CommunitiesState> {
           </div>
         )}
       </div>
+    );
+  }
+
+  searchForm() {
+    return (
+      <form
+        class="form-inline"
+        onSubmit={linkEvent(this, this.handleSearchSubmit)}
+      >
+        <input
+          type="text"
+          class="form-control mr-2 mb-2"
+          value={this.state.searchText}
+          placeholder={`${i18n.t('search')}...`}
+          onInput={linkEvent(this, this.handleSearchChange)}
+          required
+          minLength={3}
+        />
+        <button type="submit" class="btn btn-secondary mr-2 mb-2">
+          <span>{i18n.t('search')}</span>
+        </button>
+      </form>
     );
   }
 
@@ -212,64 +244,81 @@ export class Communities extends Component<any, CommunitiesState> {
   }
 
   handleUnsubscribe(communityId: number) {
-    let form: FollowCommunityForm = {
+    let form: FollowCommunity = {
       community_id: communityId,
       follow: false,
+      auth: authField(),
     };
-    WebSocketService.Instance.followCommunity(form);
+    WebSocketService.Instance.send(wsClient.followCommunity(form));
   }
 
   handleSubscribe(communityId: number) {
-    let form: FollowCommunityForm = {
+    let form: FollowCommunity = {
       community_id: communityId,
       follow: true,
+      auth: authField(),
     };
-    WebSocketService.Instance.followCommunity(form);
+    WebSocketService.Instance.send(wsClient.followCommunity(form));
+  }
+
+  handleSearchChange(i: Communities, event: any) {
+    i.setState({ searchText: event.target.value });
+  }
+
+  handleSearchSubmit(i: Communities) {
+    const searchParamEncoded = encodeURIComponent(i.state.searchText);
+    i.context.router.history.push(
+      `/search/q/${searchParamEncoded}/type/Communities/sort/TopAll/page/1`
+    );
   }
 
   refetch() {
-    let listCommunitiesForm: ListCommunitiesForm = {
+    let listCommunitiesForm: ListCommunities = {
       sort: SortType.TopAll,
       limit: communityLimit,
       page: this.state.page,
+      auth: authField(false),
     };
 
-    WebSocketService.Instance.listCommunities(listCommunitiesForm);
+    WebSocketService.Instance.send(
+      wsClient.listCommunities(listCommunitiesForm)
+    );
   }
 
   static fetchInitialData(req: InitialFetchRequest): Promise<any>[] {
     let pathSplit = req.path.split('/');
     let page = pathSplit[3] ? Number(pathSplit[3]) : 1;
-    let listCommunitiesForm: ListCommunitiesForm = {
+    let listCommunitiesForm: ListCommunities = {
       sort: SortType.TopAll,
       limit: communityLimit,
       page,
     };
-    setAuth(listCommunitiesForm, req.auth);
+    setOptionalAuth(listCommunitiesForm, req.auth);
 
     return [req.client.listCommunities(listCommunitiesForm)];
   }
 
-  parseMessage(msg: WebSocketJsonResponse) {
-    console.log(msg);
-    let res = wsJsonToRes(msg);
+  parseMessage(msg: any) {
+    let op = wsUserOp(msg);
     if (msg.error) {
       toast(i18n.t(msg.error), 'danger');
       return;
-    } else if (res.op == UserOperation.ListCommunities) {
-      let data = res.data as ListCommunitiesResponse;
+    } else if (op == UserOperation.ListCommunities) {
+      let data = wsJsonToRes<ListCommunitiesResponse>(msg).data;
       this.state.communities = data.communities;
       this.state.communities.sort(
-        (a, b) => b.number_of_subscribers - a.number_of_subscribers
+        (a, b) => b.counts.subscribers - a.counts.subscribers
       );
       this.state.loading = false;
       window.scrollTo(0, 0);
       this.setState(this.state);
-    } else if (res.op == UserOperation.FollowCommunity) {
-      let data = res.data as CommunityResponse;
-      let found = this.state.communities.find(c => c.id == data.community.id);
-      found.subscribed = data.community.subscribed;
-      found.number_of_subscribers = data.community.number_of_subscribers;
+    } else if (op == UserOperation.FollowCommunity) {
+      let data = wsJsonToRes<CommunityResponse>(msg).data;
+      let found = this.state.communities.find(
+        c => c.community.id == data.community_view.community.id
+      );
+      found.subscribed = data.community_view.subscribed;
+      found.counts.subscribers = data.community_view.counts.subscribers;
       this.setState(this.state);
     }
   }

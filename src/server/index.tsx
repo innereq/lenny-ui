@@ -8,13 +8,13 @@ import { App } from '../shared/components/app';
 import { InitialFetchRequest, IsoData } from '../shared/interfaces';
 import { routes } from '../shared/routes';
 import IsomorphicCookie from 'isomorphic-cookie';
-import { setAuth } from '../shared/utils';
-import { GetSiteForm, LemmyHttp } from 'lemmy-js-client';
+import { GetSite, LemmyHttp } from 'lemmy-js-client';
 import process from 'process';
 import { Helmet } from 'inferno-helmet';
 import { initializeSite } from '../shared/initialize';
 import { httpUri } from '../shared/env';
 import { IncomingHttpHeaders } from 'http';
+import { setOptionalAuth } from '../shared/utils';
 
 const server = express();
 const port = 1234;
@@ -30,8 +30,8 @@ server.get('/*', async (req, res) => {
   const context = {} as any;
   let auth: string = IsomorphicCookie.load('jwt', req);
 
-  let getSiteForm: GetSiteForm = {};
-  setAuth(getSiteForm, auth);
+  let getSiteForm: GetSite = {};
+  setOptionalAuth(getSiteForm, auth);
 
   let promises: Promise<any>[] = [];
 
@@ -70,14 +70,14 @@ server.get('/*', async (req, res) => {
 
   let isoData: IsoData = {
     path: req.path,
-    site,
+    site_res: site,
     routeData,
     lang,
   };
 
   const wrapper = (
     <StaticRouter location={req.url} context={isoData}>
-      <App site={isoData.site} />
+      <App siteRes={isoData.site_res} />
     </StaticRouter>
   );
   if (context.url) {
@@ -87,7 +87,7 @@ server.get('/*', async (req, res) => {
   const cspHtml = (
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src data:; connect-src * ws: wss:; frame-src *; img-src * data:; script-src 'self'; style-src 'self' 'unsafe-inline'"
+      content="default-src data: 'self'; connect-src * ws: wss:; frame-src *; img-src * data:; script-src 'self'; style-src 'self' 'unsafe-inline'; manifest-src 'self'"
     />
   );
 
