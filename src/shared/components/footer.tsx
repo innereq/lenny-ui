@@ -1,7 +1,7 @@
 import { Component } from 'inferno';
 import { Link } from 'inferno-router';
 import { i18n } from '../i18next';
-import { repoUrl, joinLemmyUrl, docsUrl } from '../utils';
+import { repoUrl, docsUrl } from '../utils';
 import { GetSiteResponse } from 'lemmy-js-client';
 
 interface FooterProps {

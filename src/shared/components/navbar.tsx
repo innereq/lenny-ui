@@ -28,7 +28,6 @@ import {
   notifyPrivateMessage,
   isBrowser,
   wsSubscribe,
-  supportLemmyUrl,
   wsUserOp,
   wsClient,
   authField,
