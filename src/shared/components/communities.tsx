@@ -9,6 +9,7 @@ import {
   FollowCommunity,
   ListCommunities,
   SortType,
+  ListingType,
   SiteView,
 } from 'lemmy-js-client';
 import { WebSocketService } from '../services';
@@ -126,6 +127,9 @@ export class Communities extends Component<any, CommunitiesState> {
                     <th>{i18n.t('name')}</th>
                     <th>{i18n.t('category')}</th>
                     <th class="text-right">{i18n.t('subscribers')}</th>
+                    <th class="text-right">
+                      {i18n.t('users')} / {i18n.t('month')}
+                    </th>
                     <th class="text-right d-none d-lg-table-cell">
                       {i18n.t('posts')}
                     </th>
@@ -143,6 +147,7 @@ export class Communities extends Component<any, CommunitiesState> {
                       </td>
                       <td>{cv.category.name}</td>
                       <td class="text-right">{cv.counts.subscribers}</td>
+                      <td class="text-right">{cv.counts.users_active_month}</td>
                       <td class="text-right d-none d-lg-table-cell">
                         {cv.counts.posts}
                       </td>
@@ -274,6 +279,7 @@ export class Communities extends Component<any, CommunitiesState> {
 
   refetch() {
     let listCommunitiesForm: ListCommunities = {
+      type_: ListingType.All,
       sort: SortType.TopAll,
       limit: communityLimit,
       page: this.state.page,
@@ -289,6 +295,7 @@ export class Communities extends Component<any, CommunitiesState> {
     let pathSplit = req.path.split('/');
     let page = pathSplit[3] ? Number(pathSplit[3]) : 1;
     let listCommunitiesForm: ListCommunities = {
+      type_: ListingType.All,
       sort: SortType.TopAll,
       limit: communityLimit,
       page,
