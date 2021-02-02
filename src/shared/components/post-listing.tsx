@@ -1155,7 +1155,8 @@ export class PostListing extends Component<PostListingProps, PostListingState> {
     );
   }
 
-  handlePostLike(i: PostListing) {
+  handlePostLike(i: PostListing, event: any) {
+    event.preventDefault();
     if (!UserService.Instance.user) {
       this.context.router.history.push(`/login`);
     }
@@ -1187,7 +1188,8 @@ export class PostListing extends Component<PostListingProps, PostListingState> {
     setupTippy();
   }
 
-  handlePostDisLike(i: PostListing) {
+  handlePostDisLike(i: PostListing, event: any) {
+    event.preventDefault();
     if (!UserService.Instance.user) {
       this.context.router.history.push(`/login`);
     }
@@ -1258,13 +1260,13 @@ export class PostListing extends Component<PostListingProps, PostListingState> {
 
   get crossPostParams(): string {
     let post = this.props.post_view.post;
-    let params = `?title=${post.name}`;
+    let params = `?title=${encodeURIComponent(post.name)}`;
 
     if (post.url) {
       params += `&url=${encodeURIComponent(post.url)}`;
     }
     if (post.body) {
-      params += `&body=${post.body}`;
+      params += `&body=${encodeURIComponent(post.body)}`;
     }
     return params;
   }
