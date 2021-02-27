@@ -57,6 +57,7 @@ import { i18n } from '../i18next';
 import moment from 'moment';
 import { UserDetails } from './user-details';
 import { MarkdownTextArea } from './markdown-textarea';
+import { Icon, Spinner } from './icon';
 import { ImageUploadForm } from './image-upload-form';
 import { BannerIconHeader } from './banner-icon-header';
 import { CommunityLink } from './community-link';
@@ -272,9 +273,7 @@ export class User extends Component<any, UserState> {
       <div class="container">
         {this.state.loading ? (
           <h5>
-            <svg class="icon icon-spinner spin">
-              <use xlinkHref="#icon-spinner"></use>
-            </svg>
+            <Spinner />
           </h5>
         ) : (
           <div class="row">
@@ -389,13 +388,10 @@ export class User extends Component<any, UserState> {
         />
         <a
           href={`/feeds/u/${this.state.userName}.xml?sort=${this.state.sort}`}
-          target="_blank"
           rel="noopener"
           title="RSS"
         >
-          <svg class="icon mx-2 text-muted small">
-            <use xlinkHref="#icon-rss">#</use>
-          </svg>
+          <Icon icon="rss" classes="text-muted small mx-2" />
         </a>
       </div>
     );
@@ -445,7 +441,6 @@ export class User extends Component<any, UserState> {
                     className={`d-flex align-self-start btn btn-secondary mr-2 ${
                       !uv.user.matrix_user_id && 'invisible'
                     }`}
-                    target="_blank"
                     rel="noopener"
                     href={`https://matrix.to/#/${uv.user.matrix_user_id}`}
                   >
@@ -485,9 +480,7 @@ export class User extends Component<any, UserState> {
               <MomentTime data={uv.user} showAgo ignoreUpdated />
             </div>
             <div className="d-flex align-items-center text-muted mb-2">
-              <svg class="icon">
-                <use xlinkHref="#icon-cake"></use>
-              </svg>
+              <Icon icon="cake" />
               <span className="ml-2">
                 {i18n.t('cake_day_title')}{' '}
                 {moment.utc(uv.user.published).local().format('MMM DD, YYYY')}
@@ -526,28 +519,36 @@ export class User extends Component<any, UserState> {
                 />
               </div>
               <div class="form-group">
-                <label>{i18n.t('language')}</label>
+                <label htmlFor="user-language">{i18n.t('language')}</label>
                 <select
+                  id="user-language"
                   value={this.state.userSettingsForm.lang}
                   onChange={linkEvent(this, this.handleUserSettingsLangChange)}
                   class="ml-2 custom-select w-auto"
                 >
-                  <option disabled>{i18n.t('language')}</option>
+                  <option disabled aria-hidden="true">
+                    {i18n.t('language')}
+                  </option>
                   <option value="browser">{i18n.t('browser_default')}</option>
-                  <option disabled>──</option>
+                  <option disabled aria-hidden="true">
+                    ──
+                  </option>
                   {languages.map(lang => (
                     <option value={lang.code}>{lang.name}</option>
                   ))}
                 </select>
               </div>
               <div class="form-group">
-                <label>{i18n.t('theme')}</label>
+                <label htmlFor="user-theme">{i18n.t('theme')}</label>
                 <select
+                  id="user-theme"
                   value={this.state.userSettingsForm.theme}
                   onChange={linkEvent(this, this.handleUserSettingsThemeChange)}
                   class="ml-2 custom-select w-auto"
                 >
-                  <option disabled>{i18n.t('theme')}</option>
+                  <option disabled aria-hidden="true">
+                    {i18n.t('theme')}
+                  </option>
                   <option value="browser">{i18n.t('browser_default')}</option>
                   {themes.map(theme => (
                     <option value={theme}>{theme}</option>
@@ -584,11 +585,12 @@ export class User extends Component<any, UserState> {
                 />
               </form>
               <div class="form-group row">
-                <label class="col-lg-5 col-form-label">
+                <label class="col-lg-5 col-form-label" htmlFor="display-name">
                   {i18n.t('display_name')}
                 </label>
                 <div class="col-lg-7">
                   <input
+                    id="display-name"
                     type="text"
                     class="form-control"
                     placeholder={i18n.t('optional')}
@@ -636,13 +638,14 @@ export class User extends Component<any, UserState> {
                 </div>
               </div>
               <div class="form-group row">
-                <label class="col-lg-5 col-form-label">
-                  <a href={elementUrl} target="_blank" rel="noopener">
+                <label class="col-lg-5 col-form-label" htmlFor="matrix-user-id">
+                  <a href={elementUrl} rel="noopener">
                     {i18n.t('matrix_user_id')}
                   </a>
                 </label>
                 <div class="col-lg-7">
                   <input
+                    id="matrix-user-id"
                     type="text"
                     class="form-control"
                     placeholder="@user:example.com"
@@ -777,9 +780,7 @@ export class User extends Component<any, UserState> {
               <div class="form-group">
                 <button type="submit" class="btn btn-block btn-secondary mr-4">
                   {this.state.userSettingsLoading ? (
-                    <svg class="icon icon-spinner spin">
-                      <use xlinkHref="#icon-spinner"></use>
-                    </svg>
+                    <Spinner />
                   ) : (
                     capitalizeFirstLetter(i18n.t('save'))
                   )}
@@ -817,9 +818,7 @@ export class User extends Component<any, UserState> {
                       onClick={linkEvent(this, this.handleDeleteAccount)}
                     >
                       {this.state.deleteAccountLoading ? (
-                        <svg class="icon icon-spinner spin">
-                          <use xlinkHref="#icon-spinner"></use>
-                        </svg>
+                        <Spinner />
                       ) : (
                         capitalizeFirstLetter(i18n.t('delete'))
                       )}

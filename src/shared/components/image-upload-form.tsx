@@ -2,6 +2,8 @@ import { Component, linkEvent } from 'inferno';
 import { pictrsUri } from '../env';
 import { UserService } from '../services';
 import { toast, randomStr } from '../utils';
+import { i18n } from '../i18next';
+import { Icon } from './icon';
 
 interface ImageUploadFormProps {
   uploadTitle: string;
@@ -48,10 +50,11 @@ export class ImageUploadForm extends Component<
                   this.props.rounded ? 'rounded-circle' : ''
                 }`}
               />
-              <a onClick={linkEvent(this, this.handleRemoveImage)}>
-                <svg class="icon mini-overlay">
-                  <use xlinkHref="#icon-x"></use>
-                </svg>
+              <a
+                onClick={linkEvent(this, this.handleRemoveImage)}
+                aria-label={i18n.t('remove')}
+              >
+                <Icon icon="x" classes="mini-overlay" />
               </a>
             </span>
           )}

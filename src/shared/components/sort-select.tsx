@@ -1,6 +1,7 @@
 import { Component, linkEvent } from 'inferno';
 import { SortType } from 'lemmy-js-client';
 import { sortingHelpUrl, randomStr } from '../utils';
+import { Icon } from './icon';
 import { i18n } from '../i18next';
 
 interface SortSelectProps {
@@ -40,19 +41,27 @@ export class SortSelect extends Component<SortSelectProps, SortSelectState> {
           value={this.state.sort}
           onChange={linkEvent(this, this.handleSortChange)}
           class="custom-select w-auto mr-2 mb-2"
+          aria-label={i18n.t('sort_type')}
         >
-          <option disabled>{i18n.t('sort_type')}</option>
+          <option disabled aria-hidden="true">
+            {i18n.t('sort_type')}
+          </option>
           {!this.props.hideHot && [
             <option value={SortType.Hot}>{i18n.t('hot')}</option>,
             <option value={SortType.Active}>{i18n.t('active')}</option>,
           ]}
           <option value={SortType.New}>{i18n.t('new')}</option>
-          {!this.props.hideMostComments && (
+          {!this.props.hideMostComments && [
             <option value={SortType.MostComments}>
               {i18n.t('most_comments')}
-            </option>
-          )}
-          <option disabled>─────</option>
+            </option>,
+            <option value={SortType.NewComments}>
+              {i18n.t('new_comments')}
+            </option>,
+          ]}
+          <option disabled aria-hidden="true">
+            ─────
+          </option>
           <option value={SortType.TopDay}>{i18n.t('top_day')}</option>
           <option value={SortType.TopWeek}>{i18n.t('top_week')}</option>
           <option value={SortType.TopMonth}>{i18n.t('top_month')}</option>
@@ -62,13 +71,10 @@ export class SortSelect extends Component<SortSelectProps, SortSelectState> {
         <a
           className="text-muted"
           href={sortingHelpUrl}
-          target="_blank"
           rel="noopener"
           title={i18n.t('sorting_help')}
         >
-          <svg class={`icon icon-inline`}>
-            <use xlinkHref="#icon-help-circle"></use>
-          </svg>
+          <Icon icon="help-circle" classes="icon-inline" />
         </a>
       </>
     );

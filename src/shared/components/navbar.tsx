@@ -34,6 +34,7 @@ import {
 } from '../utils';
 import { i18n } from '../i18next';
 import { PictrsImage } from './pictrs-image';
+import { Icon } from './icon';
 
 interface NavbarProps {
   site_res: GetSiteResponse;
@@ -197,11 +198,14 @@ export class Navbar extends Component<NavbarProps, NavbarState> {
               to="/inbox"
               title={i18n.t('inbox')}
             >
-              <svg class="icon">
-                <use xlinkHref="#icon-bell"></use>
-              </svg>
+              <Icon icon="bell" />
               {this.state.unreadCount > 0 && (
-                <span class="mx-1 badge badge-light">
+                <span
+                  class="mx-1 badge badge-light"
+                  aria-label={`${this.state.unreadCount} ${i18n.t(
+                    'unread_messages'
+                  )}`}
+                >
                   {this.state.unreadCount}
                 </span>
               )}
@@ -214,9 +218,7 @@ export class Navbar extends Component<NavbarProps, NavbarState> {
             onClick={linkEvent(this, this.expandNavbar)}
             data-tippy-content={i18n.t('expand_here')}
           >
-            <svg class="icon">
-              <use xlinkHref="#icon-menu"></use>
-            </svg>
+            <Icon icon="menu" />
           </button>
           <div
             className={`${!this.state.expanded && 'collapse'} navbar-collapse`}
@@ -261,9 +263,7 @@ export class Navbar extends Component<NavbarProps, NavbarState> {
                     to={`/admin`}
                     title={i18n.t('admin_settings')}
                   >
-                    <svg class="icon">
-                      <use xlinkHref="#icon-settings"></use>
-                    </svg>
+                    <Icon icon="settings" />
                   </Link>
                 </li>
               )}
@@ -276,6 +276,7 @@ export class Navbar extends Component<NavbarProps, NavbarState> {
                 onSubmit={linkEvent(this, this.handleSearchSubmit)}
               >
                 <input
+                  id="search-input"
                   class={`form-control mr-0 search-input ${
                     this.state.toggleSearch ? 'show-input' : 'hide-input'
                   }`}
@@ -286,15 +287,17 @@ export class Navbar extends Component<NavbarProps, NavbarState> {
                   placeholder={i18n.t('search')}
                   onBlur={linkEvent(this, this.handleSearchBlur)}
                 ></input>
+                <label class="sr-only" htmlFor="search-input">
+                  {i18n.t('search')}
+                </label>
                 <button
                   name="search-btn"
                   onClick={linkEvent(this, this.handleSearchBtn)}
                   class="px-1 btn btn-link"
                   style="color: var(--gray)"
+                  aria-label={i18n.t('search')}
                 >
-                  <svg class="icon">
-                    <use xlinkHref="#icon-search"></use>
-                  </svg>
+                  <Icon icon="search" />
                 </button>
               </form>
             )}
@@ -307,11 +310,14 @@ export class Navbar extends Component<NavbarProps, NavbarState> {
                       to="/inbox"
                       title={i18n.t('inbox')}
                     >
-                      <svg class="icon">
-                        <use xlinkHref="#icon-bell"></use>
-                      </svg>
+                      <Icon icon="bell" />
                       {this.state.unreadCount > 0 && (
-                        <span class="ml-1 badge badge-light">
+                        <span
+                          class="ml-1 badge badge-light"
+                          aria-label={`${this.state.unreadCount} ${i18n.t(
+                            'unread_messages'
+                          )}`}
+                        >
                           {this.state.unreadCount}
                         </span>
                       )}

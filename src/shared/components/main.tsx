@@ -34,6 +34,7 @@ import { SiteForm } from './site-form';
 import { UserListing } from './user-listing';
 import { CommunityLink } from './community-link';
 import { BannerIconHeader } from './banner-icon-header';
+import { Icon, Spinner } from './icon';
 import {
   wsJsonToRes,
   mdToHtml,
@@ -508,12 +509,12 @@ export class Main extends Component<any, MainState> {
           <li className="list-inline-item-action">
             <span
               class="pointer"
+              role="button"
               onClick={linkEvent(this, this.handleEditClick)}
+              aria-label={i18n.t('edit')}
               data-tippy-content={i18n.t('edit')}
             >
-              <svg class="icon icon-inline">
-                <use xlinkHref="#icon-edit"></use>
-              </svg>
+              <Icon icon="edit" classes="icon-inline" />
             </span>
           </li>
         </ul>
@@ -537,9 +538,7 @@ export class Main extends Component<any, MainState> {
       <div class="main-content-wrapper">
         {this.state.loading ? (
           <h5>
-            <svg class="icon icon-spinner spin">
-              <use xlinkHref="#icon-spinner"></use>
-            </svg>
+            <Spinner />
           </h5>
         ) : (
           <div>
@@ -559,7 +558,6 @@ export class Main extends Component<any, MainState> {
         posts={this.state.posts}
         showCommunity
         removeDuplicates
-        sort={this.state.sort}
         enableDownvotes={site.enable_downvotes}
         enableNsfw={site.enable_nsfw}
       />
@@ -568,7 +566,6 @@ export class Main extends Component<any, MainState> {
         nodes={commentsToFlatNodes(this.state.comments)}
         noIndent
         showCommunity
-        sortType={this.state.sort}
         showContext
         enableDownvotes={site.enable_downvotes}
       />
@@ -597,38 +594,29 @@ export class Main extends Component<any, MainState> {
         {this.state.listingType == ListingType.All && (
           <a
             href={`/feeds/all.xml?sort=${this.state.sort}`}
-            target="_blank"
             rel="noopener"
             title="RSS"
           >
-            <svg class="icon text-muted small">
-              <use xlinkHref="#icon-rss">#</use>
-            </svg>
+            <Icon icon="rss" classes="text-muted small" />
           </a>
         )}
         {this.state.listingType == ListingType.Local && (
           <a
             href={`/feeds/local.xml?sort=${this.state.sort}`}
-            target="_blank"
             rel="noopener"
             title="RSS"
           >
-            <svg class="icon text-muted small">
-              <use xlinkHref="#icon-rss">#</use>
-            </svg>
+            <Icon icon="rss" classes="text-muted small" />
           </a>
         )}
         {UserService.Instance.user &&
           this.state.listingType == ListingType.Subscribed && (
             <a
               href={`/feeds/front/${UserService.Instance.auth}.xml?sort=${this.state.sort}`}
-              target="_blank"
               title="RSS"
               rel="noopener"
             >
-              <svg class="icon text-muted small">
-                <use xlinkHref="#icon-rss">#</use>
-              </svg>
+              <Icon icon="rss" classes="text-muted small" />
             </a>
           )}
       </div>

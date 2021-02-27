@@ -26,6 +26,7 @@ import {
   setOptionalAuth,
 } from '../utils';
 import { CommunityLink } from './community-link';
+import { Spinner } from './icon';
 import { i18n } from '../i18next';
 import { InitialFetchRequest } from 'shared/interfaces';
 
@@ -104,10 +105,8 @@ export class Communities extends Component<any, CommunitiesState> {
           path={this.context.router.route.match.url}
         />
         {this.state.loading ? (
-          <h5 class="">
-            <svg class="icon icon-spinner spin">
-              <use xlinkHref="#icon-spinner"></use>
-            </svg>
+          <h5>
+            <Spinner />
           </h5>
         ) : (
           <div>
@@ -158,6 +157,7 @@ export class Communities extends Component<any, CommunitiesState> {
                         {cv.subscribed ? (
                           <span
                             class="pointer btn-link"
+                            role="button"
                             onClick={linkEvent(
                               cv.community.id,
                               this.handleUnsubscribe
@@ -168,6 +168,7 @@ export class Communities extends Component<any, CommunitiesState> {
                         ) : (
                           <span
                             class="pointer btn-link"
+                            role="button"
                             onClick={linkEvent(
                               cv.community.id,
                               this.handleSubscribe
@@ -197,6 +198,7 @@ export class Communities extends Component<any, CommunitiesState> {
       >
         <input
           type="text"
+          id="communities-search"
           class="form-control mr-2 mb-2"
           value={this.state.searchText}
           placeholder={`${i18n.t('search')}...`}
@@ -204,6 +206,9 @@ export class Communities extends Component<any, CommunitiesState> {
           required
           minLength={3}
         />
+        <label class="sr-only" htmlFor="communities-search">
+          {i18n.t('search')}
+        </label>
         <button type="submit" class="btn btn-secondary mr-2 mb-2">
           <span>{i18n.t('search')}</span>
         </button>
